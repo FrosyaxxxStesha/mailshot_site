@@ -5,6 +5,9 @@ from services.general.messages.senders import EmailSenderMixin
 
 
 class MailshotSender(EmailSenderMixin):
+    """
+    Класс, инкапсулирующий в себе логику механизма рассылки
+    """
     def __init__(self, pk):
         self.mailshot = MailshotPeriodicTask.objects.get(pk=pk)
 

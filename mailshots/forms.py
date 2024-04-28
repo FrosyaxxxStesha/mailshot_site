@@ -11,13 +11,22 @@ from services.general.form_mixins import FormControlMixin
 
 
 class MessageForm(FormControlMixin, ModelForm):
+    """
+    Форма сообщения
+    """
     class Meta:
         model = Message
         exclude = ["user"]
 
 
 class ClientsChoseForm(FormControlMixin, Form):
+    """
+    Форма выбора клиентов
+    """
     def __init__(self, choices_queryset, *args, **kwargs):
+        """
+        Переопределение __init__ для добавления queryset
+        """
         super().__init__(*args, **kwargs)
         self.fields["clients"] = ModelMultipleChoiceField(
             queryset=choices_queryset,
@@ -25,8 +34,13 @@ class ClientsChoseForm(FormControlMixin, Form):
 
 
 class MailshotPeriodicTaskForm(FormControlMixin, ModelForm):
-
+    """
+    Форма периодической рассылки
+    """
     def __init__(self, user, *args, **kwargs):
+        """
+        Переопределение __init__ для добавления параметра user
+        """
         self.user = user
         super().__init__(*args, **kwargs)
 
@@ -73,6 +87,9 @@ class MailshotPeriodicTaskForm(FormControlMixin, ModelForm):
 
 
 class ClientForm(FormControlMixin, ModelForm):
+    """
+    Форма клиента
+    """
     class Meta:
         model = Client
         exclude = ["user"]
@@ -92,6 +109,9 @@ class ClientForm(FormControlMixin, ModelForm):
 
 
 class MailshotDisableForm(FormControlMixin, ModelForm):
+    """
+    Форма отключения рассылки
+    """
     class Meta:
         model = MailshotPeriodicTask
         fields = ["enabled"]

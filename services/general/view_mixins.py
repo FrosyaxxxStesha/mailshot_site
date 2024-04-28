@@ -56,7 +56,6 @@ class PKSuccessViewnameMixin(SuccessViewnameMixin):
 
 
 class InstanceDictMethodMixin:
-
     def get_instance_dict(self):
         raise NotImplementedError
 
@@ -75,6 +74,9 @@ class InitialDictMethodMixin:
 
 
 class WizardUpdateView(InitialDictMethodMixin, InstanceDictMethodMixin, SingleObjectMixin, NamedUrlSessionWizardView):
+    """
+    wizard view для редактирования объекта
+    """
     def dispatch(self, request, *args, **kwargs):
         self.object = self.get_object(self.queryset)
         self.instance_dict = self.get_instance_dict()
@@ -83,12 +85,18 @@ class WizardUpdateView(InitialDictMethodMixin, InstanceDictMethodMixin, SingleOb
 
 
 class WizardCreateView(NamedUrlSessionWizardView):
+    """
+    wizard view для создания объекта
+    """
     def dispatch(self, request, *args, **kwargs):
         self.object = None
         return super().dispatch(request, *args, **kwargs)
 
 
 class CachedQuerySetMixin:
+    """
+    Миксин кеширование queryset
+    """
     cache_lifetime = 60
     cache_key = None
 

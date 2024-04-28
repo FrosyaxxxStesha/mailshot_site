@@ -13,6 +13,9 @@ class RawMessage:
 
 
 class MessageContextMixin:
+    """
+    Миксин контекста сообщения
+    """
     extra_context = None
 
     def get_context(self):
@@ -21,6 +24,9 @@ class MessageContextMixin:
 
 
 class BaseMessage(MessageContextMixin, RawMessage):
+    """
+    Базовый класс сообщения
+    """
     def get_subject(self, oneline: bool = True) -> str:
         """
         Метод рендерит шаблон с заголовком, интерполируя контекст в шаблон.

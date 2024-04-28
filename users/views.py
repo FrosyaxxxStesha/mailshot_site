@@ -26,6 +26,9 @@ User = get_user_model()
 
 
 class UsersActiveUrlMixin(ActiveUrlMixin):
+    """
+    Миксин активного url пользователей
+    """
     active_url = "users"
 
 # Миксины регистрации
@@ -77,6 +80,9 @@ class RegistrationView(UsersActiveUrlMixin,
                        UserIsNotAuthenticatedMixin,
                        RegistrationMessageViewMixin,
                        CreateView):
+    """
+    Представление регистрации
+    """
     model = User
     form_class = RegistrationForm
 
@@ -85,10 +91,16 @@ class RegistrationView(UsersActiveUrlMixin,
 
 
 class RegistrationEmailSentTemplateView(UsersActiveUrlMixin, UserIsNotAuthenticatedMixin, TemplateView):
+    """
+    Представление уведомления об отправке письма
+    """
     template_name = "users/registration/email_sent.html"
 
 
 class RegistrationValidationView(UsersActiveUrlMixin, UserIsNotAuthenticatedMixin, RegistrationValidationViewMixin, TemplateView):
+    """
+    Представление валидации ссылки активации
+    """
     template_name = "users/registration/success.html"
 
     def success_handler(self, request, *args, **kwargs):
@@ -97,6 +109,9 @@ class RegistrationValidationView(UsersActiveUrlMixin, UserIsNotAuthenticatedMixi
 
 
 class RegistrationFailedView(UsersActiveUrlMixin, UserIsNotAuthenticatedMixin, TemplateView):
+    """
+    Представление для уведомления о провале валидации ссылки
+    """
     template_name = "users/registration/failed.html"
 
 
@@ -104,16 +119,25 @@ class RegistrationFailedView(UsersActiveUrlMixin, UserIsNotAuthenticatedMixin, T
 
 
 class UserLoginView(UsersActiveUrlMixin, UserIsNotAuthenticatedMixin, SuccessMessageMixin, LoginView):
+    """
+    Представление входа
+    """
     form_class = LoginForm
     template_name = "users/auth/login_form.html"
     success_message = "Вы успешно вошли"
 
 
 class LogoutPreview(UsersActiveUrlMixin, LoginRequiredMixin, TemplateView):
+    """
+    Представление для отображения формы выхода
+    """
     template_name = "users/auth/logout_form.html"
 
 
 class UserLogoutView(LoginRequiredMixin, LogoutView):
+    """
+    Представление выхода
+    """
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
         messages.info(request, "Вы успешно вышли")
@@ -124,6 +148,9 @@ class UserLogoutView(LoginRequiredMixin, LogoutView):
 
 
 class UserPasswordResetView(UsersActiveUrlMixin, UserIsNotAuthenticatedMixin, SuccessViewnameMixin, PasswordResetView):
+    """
+    Представление форсы сброса пароля
+    """
     form_class = UserPasswordResetForm
     template_name = "users/reset/form.html"
     success_viewname = "users:reset_email_sent"
@@ -133,10 +160,17 @@ class UserPasswordResetView(UsersActiveUrlMixin, UserIsNotAuthenticatedMixin, Su
 
 
 class ResetEmailSentTemplateView(UsersActiveUrlMixin, UserIsNotAuthenticatedMixin, TemplateView):
+    """
+    Представление для уведомления об отправке письма для сброса пароля
+    """
     template_name = "users/reset/email_sent.html"
 
 
 class UserPasswordResetConfirmView(UsersActiveUrlMixin, SuccessViewnameMixin, PasswordResetConfirmView):
+    """
+    Представление валидации ссылки для сброса пароля и
+    установки нового пароля
+    """
     form_class = UserSetPasswordForm
     template_name = "users/reset/set_password_form.html"
     success_viewname = "users:reset_complete"
@@ -144,6 +178,9 @@ class UserPasswordResetConfirmView(UsersActiveUrlMixin, SuccessViewnameMixin, Pa
 
 
 class ResetCompleteTemplateView(UsersActiveUrlMixin, TemplateView):
+    """
+    Представление уведомления об успешном восстановлении пароля
+    """
     template_name = "users/reset/success.html"
 
 
@@ -151,6 +188,9 @@ class ResetCompleteTemplateView(UsersActiveUrlMixin, TemplateView):
 
 
 class UserObjectViewGetter:
+    """
+    Миксин получения пользователя из request
+    """
     def get_object(self, queryset=None):
         return self.request.user
 
@@ -161,6 +201,9 @@ class UserUpdateView(LoginRequiredMixin,
                      SuccessMessageMixin,
                      SuccessViewnameMixin,
                      UpdateView):
+    """
+    Представление редактирование пользователя
+    """
     model = User
     form_class = UserUpdateForm
     template_name = "users/update.html"
@@ -169,12 +212,18 @@ class UserUpdateView(LoginRequiredMixin,
 
 
 class BaseUserDetailView(UsersActiveUrlMixin, DetailView):
+    """
+    Базовое представление детального просмотра пользователя
+    """
     model = User
     template_name = "users/detail.html"
     context_object_name = "user"
 
 
 class UserDetailView(LoginRequiredMixin, UserObjectViewGetter, BaseUserDetailView):
+    """
+    Представление для просмотра текущего авторизованного пользователя
+    """
     pass
 
 
@@ -184,6 +233,9 @@ class UserDetailView(LoginRequiredMixin, UserObjectViewGetter, BaseUserDetailVie
 
 
 class ManagerDeactivateUserUpdateView(PKSuccessViewnameMixin, UsersActiveUrlMixin, PermissionRequiredMixin, UpdateView):
+    """
+    Представление деактивации пользователя для менеджера
+    """
     model = User
     permission_required = "users.can_deactivate"
     success_viewname = "users:manager_detail"
@@ -199,11 +251,17 @@ class ManagerDeactivateUserUpdateView(PKSuccessViewnameMixin, UsersActiveUrlMixi
 
 
 class ManagerUserListView(UsersActiveUrlMixin, PermissionRequiredMixin, ListView):
+    """
+    Просмотр списка пользователей
+    """
     model = User
     permission_required = "users.view_user"
     template_name = "users/management/list.html"
 
 
 class ManagerUserDetailView(PermissionRequiredMixin, BaseUserDetailView):
+    """
+    Детальный просмотр пользователя для менеджера
+    """
     permission_required = "users.view_user"
     template_name = "users/management/detail.html"

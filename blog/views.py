@@ -5,10 +5,16 @@ from services.general.view_mixins import CachedQuerySetMixin, ActiveUrlMixin
 
 
 class IndexActiveUrlMixin(ActiveUrlMixin):
+    """
+    Миксин активного url для главной страницы
+    """
     active_url = "index"
 
 
 class ArticleListView(CachedQuerySetMixin, IndexActiveUrlMixin, ListView):
+    """
+    Представление списка статей
+    """
     cache_lifetime = 600
     model = Article
     template_name = "blog/list.html"
@@ -18,6 +24,9 @@ class ArticleListView(CachedQuerySetMixin, IndexActiveUrlMixin, ListView):
 
 
 class ArticleDetailView(IndexActiveUrlMixin, DetailView):
+    """
+    Представление детальной информации о статье блога
+    """
     model = Article
     template_name = "blog/detail.html"
 

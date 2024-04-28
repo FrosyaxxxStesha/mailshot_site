@@ -40,14 +40,23 @@ TEMPLATES = {
 
 
 class MailshotActiveUrl(ActiveUrlMixin):
+    """
+    Активный url для рассылки
+    """
     active_url = "mailshots"
 
 
 class ClientActiveUrl(ActiveUrlMixin):
+    """
+    Активный url для клиента
+    """
     active_url = "clients"
 
 
 class MailshotEditMixin(MailshotActiveUrl):
+    """
+    Миксин общей логики для mailshot wizard views
+    """
     queryset = MailshotPeriodicTask.objects.all()
     form_list = FORMS
 
@@ -55,6 +64,9 @@ class MailshotEditMixin(MailshotActiveUrl):
         return [TEMPLATES.get(self.steps.current)]
 
     def get_form_kwargs(self, step):
+        """
+        Добавляет дополнительные аргументы форм
+        """
         if step == "clients":
             return {"choices_queryset": Client.objects.filter(user=self.request.user)}
         if step == "mailshot_periodic_task":
@@ -68,6 +80,9 @@ class MailshotEditMixin(MailshotActiveUrl):
 
 
 class MailshotWizardCreateView(LoginRequiredMixin, MailshotEditMixin, WizardCreateView):
+    """
+    Последовательное создание рассылки
+    """
     extra_context = {"title": "Создание рассылки"}
 
     def done(self, form_list, **kwargs):
@@ -97,6 +112,9 @@ class MailshotWizardCreateView(LoginRequiredMixin, MailshotEditMixin, WizardCrea
 
 
 class MailshotWizardUpdateView(LoginRequiredMixin, UserBelongedObjectTestMixin, MailshotEditMixin, WizardUpdateView):
+    """
+    Последовательное редактирование рассылки
+    """
     extra_context = {"title": "Редактирование рассылки"}
 
     def get_instance_dict(self):
@@ -140,6 +158,9 @@ class MailshotWizardUpdateView(LoginRequiredMixin, UserBelongedObjectTestMixin, 
 
 
 class BaseMailshotDetailView(MailshotActiveUrl, DetailView):
+    """
+    Базовое представление для детального просмотра рассылки
+    """
     model = MailshotPeriodicTask
     template_name = "mailshots/detail.html"
 
@@ -161,6 +182,9 @@ class BaseMailshotDetailView(MailshotActiveUrl, DetailView):
 
 
 class MailshotDetailView(LoginRequiredMixin, UserBelongedObjectTestMixin, BaseMailshotDetailView):
+    """
+    Представление для детального просмотра рассылки обычным пользователем
+    """
     pass
 
 
@@ -170,6 +194,9 @@ class MailshotDeleteView(LoginRequiredMixin,
                          SuccessViewnameMixin,
                          UserBelongedObjectTestMixin,
                          DeleteView):
+    """
+    Представление удаления рассылки
+    """
     model = MailshotPeriodicTask
     template_name = "mailshots/delete.html"
     success_viewname = "mailshots:list"
@@ -180,12 +207,18 @@ class MailshotDeleteView(LoginRequiredMixin,
 
 
 class BaseMailshotListView(MailshotActiveUrl, ListView):
+    """
+    Базовое представление списка рассылок
+    """
     model = MailshotPeriodicTask
     template_name = "mailshots/list.html"
 
     context_object_name = "mailshots"
 
     def get_queryset(self):
+        """
+        Фильтрация по параметру статуса
+        """
         status = self.kwargs.get("status")
 
         match status:
@@ -202,6 +235,9 @@ class BaseMailshotListView(MailshotActiveUrl, ListView):
 
 
 class MailshotListView(LoginRequiredMixin, UserBelongedListMixin, BaseMailshotListView):
+    """
+    Представление просмотра списка рассылок для обычного пользователя
+    """
     pass
 
 
@@ -211,6 +247,9 @@ class EnableMailshotUpdateView(LoginRequiredMixin,
                                MailshotActiveUrl,
                                UserBelongedObjectTestMixin,
                                UpdateView):
+    """
+    Активация рассылки
+    """
     model = MailshotPeriodicTask
     form_class = MailshotPeriodicTaskForm
     success_viewname = "mailshots:detail"
@@ -232,6 +271,9 @@ class EnableMailshotUpdateView(LoginRequiredMixin,
 
 
 class BaseDisableMailshotUpdateView(MailshotActiveUrl, PKSuccessViewnameMixin, UpdateView):
+    """
+    Базовое представление деактивации рассылки
+    """
     model = MailshotPeriodicTask
     form_class = MailshotDisableForm
     success_viewname = "mailshots:detail"
@@ -246,8 +288,10 @@ class BaseDisableMailshotUpdateView(MailshotActiveUrl, PKSuccessViewnameMixin, U
         return HttpResponseRedirect(self.get_success_url())
 
 
-
 class DisableMailshotView(LoginRequiredMixin, UserBelongedObjectTestMixin, BaseDisableMailshotUpdateView):
+    """
+    Представление деактивации рассылки для обычного пользователя
+    """
     pass
 
 
@@ -257,11 +301,17 @@ class DisableMailshotView(LoginRequiredMixin, UserBelongedObjectTestMixin, BaseD
 
 
 class ClientListView(ClientActiveUrl, LoginRequiredMixin, UserBelongedListMixin, ListView):
+    """
+    Представление просмотра списка клиентов
+    """
     model = Client
     template_name = "mailshots/clients/list.html"
 
 
 class ClientCreateView(ClientActiveUrl, LoginRequiredMixin, SuccessViewnameMixin, CreateView):
+    """
+    Создание клиента
+    """
     model = Client
     form_class = ClientForm
     template_name = "mailshots/clients/form.html"
@@ -291,6 +341,9 @@ class ClientUpdateView(ClientActiveUrl,
                        SuccessMessageMixin,
                        UserBelongedObjectTestMixin,
                        UpdateView):
+    """
+    Редактирование клиента
+    """
     model = Client
     form_class = ClientForm
     template_name = "mailshots/clients/form.html"
@@ -307,6 +360,9 @@ class ClientDeleteView(ClientActiveUrl,
                        SuccessMessageMixin,
                        UserBelongedObjectTestMixin,
                        DeleteView):
+    """
+    Удаление клиента
+    """
     model = Client
     template_name = "mailshots/clients/delete.html"
     success_viewname = "mailshots:clients_list"
@@ -314,6 +370,9 @@ class ClientDeleteView(ClientActiveUrl,
 
 
 class ClientDetailView(ClientActiveUrl, LoginRequiredMixin, UserBelongedObjectTestMixin, DeleteView):
+    """
+    Просмотр клиента
+    """
     model = Client
     template_name = "mailshots/clients/detail.html"
 
@@ -324,6 +383,9 @@ class ClientDetailView(ClientActiveUrl, LoginRequiredMixin, UserBelongedObjectTe
 
 
 class MailshotInlineQuerysetMixin:
+    """
+    Миксин дочернего для объекта queryset
+    """
     def get_queryset(self):
         mailshot_pk = self.kwargs.get("mailshot_pk")
         queryset = super().get_queryset().filter(mailshot__pk=mailshot_pk)
@@ -332,6 +394,9 @@ class MailshotInlineQuerysetMixin:
 
 
 class BaseLogListView(MailshotActiveUrl, MailshotInlineQuerysetMixin, ListView):
+    """
+    Базовое представление списка логов
+    """
     model = Log
     template_name = "mailshots/logs/list.html"
 
@@ -340,15 +405,24 @@ class BaseLogListView(MailshotActiveUrl, MailshotInlineQuerysetMixin, ListView):
 
 
 class LogListView(LoginRequiredMixin, UserBelongedListMixin, BaseLogListView):
+    """
+    Представление списка логов для обычного пользователя
+    """
     pass
 
 
 class BaseLogDetailView(MailshotActiveUrl, MailshotInlineQuerysetMixin, DetailView):
+    """
+    Базовое представление детального просмотра лога
+    """
     model = Log
     template_name = "mailshots/logs/detail.html"
 
 
 class LogDetailView(LoginRequiredMixin, UserBelongedObjectTestMixin, BaseLogDetailView):
+    """
+    Представление просмотра лога для обычного пользователя
+    """
     pass
 
 
@@ -358,13 +432,22 @@ class LogDetailView(LoginRequiredMixin, UserBelongedObjectTestMixin, BaseLogDeta
 
 
 class ManagerMailshotListView(PermissionRequiredMixin, BaseMailshotListView):
+    """
+    Просмотр списка рассылок для менеджера
+    """
     permission_required = "mailshots.view_mailshot_periodic_task"
 
 
 class ManagerMailshotDetailView(PermissionRequiredMixin, BaseMailshotDetailView):
+    """
+    Детальная информация о рассылке для менеджера
+    """
     permission_required = "mailshots.view_mailshot_periodic_task"
 
 
 class ManagerMailshotDisableUpdateView(PermissionRequiredMixin, BaseDisableMailshotUpdateView):
+    """
+    Отключение рассылки для менеджера
+    """
     permission_required = "mailshots.can_disable"
     success_viewname = "mailshots:manager_detail"

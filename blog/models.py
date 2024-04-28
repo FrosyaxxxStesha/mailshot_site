@@ -2,6 +2,9 @@ from django.db import models
 
 
 class Article(models.Model):
+    """
+    модель статьи блога
+    """
     heading = models.CharField(max_length=100, verbose_name="Заголовок")
     body = models.TextField(verbose_name="содержимое статьи")
     image = models.ImageField(

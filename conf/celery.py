@@ -1,3 +1,7 @@
+"""
+Файл конфигурации celery
+"""
+
 import os
 from celery import Celery
 

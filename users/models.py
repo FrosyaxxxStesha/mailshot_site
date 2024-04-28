@@ -3,6 +3,10 @@ from django.db import models
 
 
 class User(AbstractUser):
+    """
+    Модель пользователя без поля username
+    и с дополнительными полями
+    """
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'

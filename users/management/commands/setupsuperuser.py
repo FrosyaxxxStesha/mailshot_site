@@ -6,6 +6,9 @@ User = get_user_model()
 
 
 class Command(BaseCommand):
+    """
+    Команда создания суперпользователя
+    """
     def handle(self, *args, **options):
         email = input("email: ")
         password = input("password: ")

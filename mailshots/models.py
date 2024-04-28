@@ -27,6 +27,9 @@ SET_NULL = dict(
 
 
 class Client(models.Model):
+    """
+    Клиент рассылки
+    """
     email = models.EmailField(verbose_name="email")
     name = models.CharField(max_length=32, **NULL, verbose_name="Имя")
     surname = models.CharField(max_length=32, **NULL,  verbose_name="Фамилия")
@@ -48,6 +51,9 @@ class Client(models.Model):
 
 
 class Message(models.Model):
+    """
+    Сообщение рассылки
+    """
     subject = models.CharField(max_length=256, **NULL, verbose_name="Заголовок")
     body = models.TextField(**NULL,  verbose_name="Содержимое сообщения")
     user = models.ForeignKey(User, **CASCADE,  verbose_name="Создавший пользователь")
@@ -68,6 +74,9 @@ FREQUENCY_CHOICES = [
 
 
 class MailshotPeriodicTask(PeriodicTask):
+    """
+    Модель рассылки
+    """
     defined_name = models.CharField(max_length=100, verbose_name="Имя, установленное пользователем")
     frequency = models.CharField(max_length=8, choices=FREQUENCY_CHOICES, verbose_name="Частота рассылки",
                                  default="DAILY",
@@ -94,6 +103,10 @@ class MailshotPeriodicTask(PeriodicTask):
         return self.defined_name
 
     def alter_crontab(self, start_at):
+        """
+        Метод для определения расписания crontab
+        по времени начала
+        """
         if self.crontab:
             crontab = self.crontab
         else:
@@ -135,6 +148,9 @@ class MailshotPeriodicTask(PeriodicTask):
 
 
 class Log(models.Model):
+    """
+    Логи рассылки
+    """
     class Status(models.TextChoices):
         OK = "OK"
         FAIL = "FD"
